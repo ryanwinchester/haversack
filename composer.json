@@ -12,7 +12,13 @@
     "require": {
         "php": "^7.0"
     },
+    "require-dev": {
+        "phpunit/phpunit": "^5.4"
+    },
     "autoload": {
         "psr-4": { "SevenShores\\Haversack\\": "src/" }
+    },
+    "autoload-dev": {
+        "classmap": ["tests/"]
     }
 }
