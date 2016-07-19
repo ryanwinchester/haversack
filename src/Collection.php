@@ -335,10 +335,10 @@ class Collection implements ArrayAccess, IteratorAggregate
     }
 
     /**
-     * @return array
+     * @return static
      */
     function values()
     {
-        return array_values($this->items);
+        return new static(array_values($this->items));
     }
 }
