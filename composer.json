@@ -19,6 +19,6 @@
         "psr-4": { "SevenShores\\Haversack\\": "src/" }
     },
     "autoload-dev": {
-        "classmap": ["tests/"]
+        "psr-4": { "SevenShores\\Testing\\Haversack\\": "tests/" }
     }
 }

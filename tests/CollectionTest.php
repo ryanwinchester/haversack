@@ -5,6 +5,10 @@
  * A lot of the methods are similar so I copied the code from there and modified to suit.
  */
 
+namespace SevenShores\Testing\Haversack;
+
+require __DIR__."/../vendor/autoload.php";
+
 use PHPUnit\Framework\TestCase;
 use SevenShores\Haversack\Collection;
 
@@ -38,14 +42,14 @@ class CollectionTest extends TestCase
 
     function testFirstReturnsFirstItemInCollection()
     {
-        $c = new Collection(['foo', 'bar']);
-        $this->assertEquals('foo', $c->first());
+        $collection = new Collection(['foo', 'bar']);
+        $this->assertEquals('foo', $collection->first());
     }
 
     function testLastReturnsLastItemInCollection()
     {
-        $c = new Collection(['foo', 'bar']);
-        $this->assertEquals('bar', $c->last());
+        $collection = new Collection(['foo', 'bar']);
+        $this->assertEquals('bar', $collection->last());
     }
 
     function testLastWithCallback()
@@ -75,37 +79,37 @@ class CollectionTest extends TestCase
 
     function testEmptyCollectionIsEmpty()
     {
-        $c = new Collection();
+        $collection = new Collection();
 
-        $this->assertTrue($c->isEmpty());
+        $this->assertTrue($collection->isEmpty());
     }
 
     function testOffsetAccess()
     {
-        $c = new Collection(['name' => 'taylor']);
-        $this->assertEquals('taylor', $c['name']);
-        $c['name'] = 'dayle';
-        $this->assertEquals('dayle', $c['name']);
-        $this->assertTrue(isset($c['name']));
-        unset($c['name']);
-        $this->assertFalse(isset($c['name']));
-        $c[] = 'jason';
-        $this->assertEquals('jason', $c[0]);
+        $collection = new Collection(['name' => 'taylor']);
+        $this->assertEquals('taylor', $collection['name']);
+        $collection['name'] = 'dayle';
+        $this->assertEquals('dayle', $collection['name']);
+        $this->assertTrue(isset($collection['name']));
+        unset($collection['name']);
+        $this->assertFalse(isset($collection['name']));
+        $collection[] = 'jason';
+        $this->assertEquals('jason', $collection[0]);
     }
 
     function testArrayAccessOffsetExists()
     {
-        $c = new Collection(['foo', 'bar']);
-        $this->assertTrue($c->offsetExists(0));
-        $this->assertTrue($c->offsetExists(1));
-        $this->assertFalse($c->offsetExists(1000));
+        $collection = new Collection(['foo', 'bar']);
+        $this->assertTrue($collection->offsetExists(0));
+        $this->assertTrue($collection->offsetExists(1));
+        $this->assertFalse($collection->offsetExists(1000));
     }
 
     function testArrayAccessOffsetGet()
     {
-        $c = new Collection(['foo', 'bar']);
-        $this->assertEquals('foo', $c->offsetGet(0));
-        $this->assertEquals('bar', $c->offsetGet(1));
+        $collection = new Collection(['foo', 'bar']);
+        $this->assertEquals('foo', $collection->offsetGet(0));
+        $this->assertEquals('bar', $collection->offsetGet(1));
     }
 
     /**
@@ -113,19 +117,19 @@ class CollectionTest extends TestCase
      */
     function testArrayAccessOffsetGetOnNonExist()
     {
-        $c = new Collection(['foo', 'bar']);
-        $c->offsetGet(1000);
+        $collection = new Collection(['foo', 'bar']);
+        $collection->offsetGet(1000);
     }
 
     function testArrayAccessOffsetSet()
     {
-        $c = new Collection(['foo', 'foo']);
+        $collection = new Collection(['foo', 'foo']);
 
-        $c->offsetSet(1, 'bar');
-        $this->assertEquals('bar', $c[1]);
+        $collection->offsetSet(1, 'bar');
+        $this->assertEquals('bar', $collection[1]);
 
-        $c->offsetSet(null, 'qux');
-        $this->assertEquals('qux', $c[2]);
+        $collection->offsetSet(null, 'qux');
+        $this->assertEquals('qux', $collection[2]);
     }
 
     /**
@@ -133,83 +137,83 @@ class CollectionTest extends TestCase
      */
     function testArrayAccessOffsetUnset()
     {
-        $c = new Collection(['foo', 'bar']);
+        $collection = new Collection(['foo', 'bar']);
 
-        $c->offsetUnset(1);
-        $c[1];
+        $collection->offsetUnset(1);
+        $collection[1];
     }
 
     function testCountable()
     {
-        $c = new Collection(['foo', 'bar']);
-        $this->assertCount(2, $c);
+        $collection = new Collection(['foo', 'bar']);
+        $this->assertCount(2, $collection);
     }
 
     function testIterable()
     {
-        $c = new Collection(['foo']);
-        $this->assertInstanceOf('ArrayIterator', $c->getIterator());
-        $this->assertEquals(['foo'], $c->getIterator()->getArrayCopy());
+        $collection = new Collection(['foo']);
+        $this->assertInstanceOf('ArrayIterator', $collection->getIterator());
+        $this->assertEquals(['foo'], $collection->getIterator()->getArrayCopy());
     }
 
     function testCachingIterator()
     {
-        $c = new Collection(['foo']);
-        $this->assertInstanceOf('CachingIterator', $c->getCachingIterator());
+        $collection = new Collection(['foo']);
+        $this->assertInstanceOf('CachingIterator', $collection->getCachingIterator());
     }
 
     function testFilter()
     {
-        $c = new Collection([['id' => 1, 'name' => 'Hello'], ['id' => 2, 'name' => 'World']]);
-        $this->assertEquals([1 => ['id' => 2, 'name' => 'World']], $c->filter(function ($item) {
+        $collection = new Collection([['id' => 1, 'name' => 'Hello'], ['id' => 2, 'name' => 'World']]);
+        $this->assertEquals([1 => ['id' => 2, 'name' => 'World']], $collection->filter(function ($item) {
             return $item['id'] == 2;
         })->all());
 
-        $c = new Collection(['', 'Hello', '', 'World']);
-        $this->assertEquals(['Hello', 'World'], $c->filter()->values()->all());
+        $collection = new Collection(['', 'Hello', '', 'World']);
+        $this->assertEquals(['Hello', 'World'], $collection->filter()->values()->all());
 
-        $c = new Collection(['id' => 1, 'first' => 'Hello', 'second' => 'World']);
-        $this->assertEquals(['first' => 'Hello', 'second' => 'World'], $c->filter(function ($item, $key) {
+        $collection = new Collection(['id' => 1, 'first' => 'Hello', 'second' => 'World']);
+        $this->assertEquals(['first' => 'Hello', 'second' => 'World'], $collection->filter(function ($item, $key) {
             return $key != 'id';
         })->all());
     }
 
     function testValues()
     {
-        $c = new Collection([['id' => 1, 'name' => 'Hello'], ['id' => 2, 'name' => 'World']]);
-        $this->assertEquals([['id' => 2, 'name' => 'World']], $c->filter(function ($item) {
+        $collection = new Collection([['id' => 1, 'name' => 'Hello'], ['id' => 2, 'name' => 'World']]);
+        $this->assertEquals([['id' => 2, 'name' => 'World']], $collection->filter(function ($item) {
             return $item['id'] == 2;
         })->values()->all());
     }
 
     function testMergeNull()
     {
-        $c = new Collection(['name' => 'Hello']);
-        $this->assertEquals(['name' => 'Hello'], $c->merge(null)->all());
+        $collection = new Collection(['name' => 'Hello']);
+        $this->assertEquals(['name' => 'Hello'], $collection->merge(null)->all());
     }
 
     function testMergeArray()
     {
-        $c = new Collection(['name' => 'Hello']);
-        $this->assertEquals(['name' => 'Hello', 'id' => 1], $c->merge(['id' => 1])->all());
+        $collection = new Collection(['name' => 'Hello']);
+        $this->assertEquals(['name' => 'Hello', 'id' => 1], $collection->merge(['id' => 1])->all());
     }
 
     function testMergeCollection()
     {
-        $c = new Collection(['name' => 'Hello']);
-        $this->assertEquals(['name' => 'World', 'id' => 1], $c->merge(new Collection(['name' => 'World', 'id' => 1]))->all());
+        $collection = new Collection(['name' => 'Hello']);
+        $this->assertEquals(['name' => 'World', 'id' => 1], $collection->merge(new Collection(['name' => 'World', 'id' => 1]))->all());
     }
 
     function testDiffCollection()
     {
-        $c = new Collection(['id' => 1, 'first_word' => 'Hello']);
-        $this->assertEquals(['id' => 1], $c->diff(new Collection(['first_word' => 'Hello', 'last_word' => 'World']))->all());
+        $collection = new Collection(['id' => 1, 'first_word' => 'Hello']);
+        $this->assertEquals(['id' => 1], $collection->diff(new Collection(['first_word' => 'Hello', 'last_word' => 'World']))->all());
     }
 
     function testDiffNull()
     {
-        $c = new Collection(['id' => 1, 'first_word' => 'Hello']);
-        $this->assertEquals(['id' => 1, 'first_word' => 'Hello'], $c->diff(null)->all());
+        $collection = new Collection(['id' => 1, 'first_word' => 'Hello']);
+        $this->assertEquals(['id' => 1, 'first_word' => 'Hello'], $collection->diff(null)->all());
     }
 
     function testDiffKeys()
@@ -221,16 +225,16 @@ class CollectionTest extends TestCase
 
     function testEach()
     {
-        $c = new Collection($original = [1, 2, 'foo' => 'bar', 'bam' => 'baz']);
+        $collection = new Collection($original = [1, 2, 'foo' => 'bar', 'bam' => 'baz']);
 
         $result = [];
-        $c->each(function ($item, $key) use (&$result) {
+        $collection->each(function ($item, $key) use (&$result) {
             $result[$key] = $item;
         });
         $this->assertEquals($original, $result);
 
         $result = [];
-        $c->each(function ($item, $key) use (&$result) {
+        $collection->each(function ($item, $key) use (&$result) {
             $result[$key] = $item;
             if (is_string($key)) {
                 return false;
@@ -241,16 +245,16 @@ class CollectionTest extends TestCase
 
     function testUnique()
     {
-        $c = new Collection(['Hello', 'World', 'World']);
-        $this->assertEquals(['Hello', 'World'], $c->unique()->all());
+        $collection = new Collection(['Hello', 'World', 'World']);
+        $this->assertEquals(['Hello', 'World'], $collection->unique()->all());
 
-        $c = new Collection([[1, 2], [1, 2], [2, 3], [3, 4], [2, 3]]);
-        $this->assertEquals([[1, 2], [2, 3], [3, 4]], $c->unique()->values()->all());
+        $collection = new Collection([[1, 2], [1, 2], [2, 3], [3, 4], [2, 3]]);
+        $this->assertEquals([[1, 2], [2, 3], [3, 4]], $collection->unique()->values()->all());
     }
 
     //function testUniqueWithCallback()
     //{
-    //    $c = new Collection([
+    //    $collection = new Collection([
     //        1 => ['id' => 1, 'first' => 'Taylor', 'last' => 'Otwell'], 2 => ['id' => 2, 'first' => 'Taylor', 'last' => 'Otwell'],
     //        3 => ['id' => 3, 'first' => 'Abigail', 'last' => 'Otwell'], 4 => ['id' => 4, 'first' => 'Abigail', 'last' => 'Otwell'],
     //        5 => ['id' => 5, 'first' => 'Taylor', 'last' => 'Swift'], 6 => ['id' => 6, 'first' => 'Taylor', 'last' => 'Swift'],
@@ -259,13 +263,13 @@ class CollectionTest extends TestCase
     //    $this->assertEquals([
     //        1 => ['id' => 1, 'first' => 'Taylor', 'last' => 'Otwell'],
     //        3 => ['id' => 3, 'first' => 'Abigail', 'last' => 'Otwell'],
-    //    ], $c->unique('first')->all());
+    //    ], $collection->unique('first')->all());
     //
     //    $this->assertEquals([
     //        1 => ['id' => 1, 'first' => 'Taylor', 'last' => 'Otwell'],
     //        3 => ['id' => 3, 'first' => 'Abigail', 'last' => 'Otwell'],
     //        5 => ['id' => 5, 'first' => 'Taylor', 'last' => 'Swift'],
-    //    ], $c->unique(function ($item) {
+    //    ], $collection->unique(function ($item) {
     //        return $item['first'].$item['last'];
     //    })->all());
     //}
@@ -480,55 +484,55 @@ class CollectionTest extends TestCase
 
     function testGettingSumFromCollection()
     {
-        $c = new Collection([(object) ['foo' => 50], (object) ['foo' => 50]]);
-        $this->assertEquals(100, $c->sum('foo'));
+        $collection = new Collection([(object) ['foo' => 50], (object) ['foo' => 50]]);
+        $this->assertEquals(100, $collection->sum('foo'));
 
-        $c = new Collection([(object) ['foo' => 50], (object) ['foo' => 50]]);
-        $this->assertEquals(100, $c->sum(function ($i) {
+        $collection = new Collection([(object) ['foo' => 50], (object) ['foo' => 50]]);
+        $this->assertEquals(100, $collection->sum(function ($i) {
             return $i->foo;
         }));
     }
 
     function testCanSumValuesWithoutACallback()
     {
-        $c = new Collection([1, 2, 3, 4, 5]);
-        $this->assertEquals(15, $c->sum());
+        $collection = new Collection([1, 2, 3, 4, 5]);
+        $this->assertEquals(15, $collection->sum());
     }
 
     function testGettingSumFromEmptyCollection()
     {
-        $c = new Collection();
-        $this->assertEquals(0, $c->sum('foo'));
+        $collection = new Collection();
+        $this->assertEquals(0, $collection->sum('foo'));
     }
 
     function testGettingMaxItemsFromCollection()
     {
-        $c = new Collection([(object) ['foo' => 10], (object) ['foo' => 20]]);
-        $this->assertEquals(20, $c->max('foo'));
+        $collection = new Collection([(object) ['foo' => 10], (object) ['foo' => 20]]);
+        $this->assertEquals(20, $collection->max('foo'));
 
-        $c = new Collection([['foo' => 10], ['foo' => 20]]);
-        $this->assertEquals(20, $c->max('foo'));
+        $collection = new Collection([['foo' => 10], ['foo' => 20]]);
+        $this->assertEquals(20, $collection->max('foo'));
 
-        $c = new Collection([1, 2, 3, 4, 5]);
-        $this->assertEquals(5, $c->max());
+        $collection = new Collection([1, 2, 3, 4, 5]);
+        $this->assertEquals(5, $collection->max());
 
-        $c = new Collection();
-        $this->assertNull($c->max());
+        $collection = new Collection();
+        $this->assertNull($collection->max());
     }
 
     function testGettingMinItemsFromCollection()
     {
-        $c = new Collection([(object) ['foo' => 10], (object) ['foo' => 20]]);
-        $this->assertEquals(10, $c->min('foo'));
+        $collection = new Collection([(object) ['foo' => 10], (object) ['foo' => 20]]);
+        $this->assertEquals(10, $collection->min('foo'));
 
-        $c = new Collection([['foo' => 10], ['foo' => 20]]);
-        $this->assertEquals(10, $c->min('foo'));
+        $collection = new Collection([['foo' => 10], ['foo' => 20]]);
+        $this->assertEquals(10, $collection->min('foo'));
 
-        $c = new Collection([1, 2, 3, 4, 5]);
-        $this->assertEquals(1, $c->min());
+        $collection = new Collection([1, 2, 3, 4, 5]);
+        $this->assertEquals(1, $collection->min());
 
-        $c = new Collection();
-        $this->assertNull($c->min());
+        $collection = new Collection();
+        $this->assertNull($collection->min());
     }
 
     //function testOnly()
@@ -544,22 +548,22 @@ class CollectionTest extends TestCase
 
     //function testGettingAvgItemsFromCollection()
     //{
-    //    $c = new Collection([(object) ['foo' => 10], (object) ['foo' => 20]]);
-    //    $this->assertEquals(15, $c->avg('foo'));
+    //    $collection = new Collection([(object) ['foo' => 10], (object) ['foo' => 20]]);
+    //    $this->assertEquals(15, $collection->avg('foo'));
     //
-    //    $c = new Collection([['foo' => 10], ['foo' => 20]]);
-    //    $this->assertEquals(15, $c->avg('foo'));
+    //    $collection = new Collection([['foo' => 10], ['foo' => 20]]);
+    //    $this->assertEquals(15, $collection->avg('foo'));
     //
-    //    $c = new Collection([1, 2, 3, 4, 5]);
-    //    $this->assertEquals(3, $c->avg());
+    //    $collection = new Collection([1, 2, 3, 4, 5]);
+    //    $this->assertEquals(3, $collection->avg());
     //
-    //    $c = new Collection();
-    //    $this->assertNull($c->avg());
+    //    $collection = new Collection();
+    //    $this->assertNull($collection->avg());
     //}
 
     //function testJsonSerialize()
     //{
-    //    $c = new Collection([
+    //    $collection = new Collection([
     //        new TestArrayableObject(),
     //        new TestJsonableObject(),
     //        new TestJsonSerializeObject(),
@@ -571,7 +575,7 @@ class CollectionTest extends TestCase
     //        ['foo' => 'bar'],
     //        ['foo' => 'bar'],
     //        'baz',
-    //    ], $c->jsonSerialize());
+    //    ], $collection->jsonSerialize());
     //}
 
     //function testCombineWithArray()
@@ -582,8 +586,8 @@ class CollectionTest extends TestCase
     //        3 => 6,
     //    ];
     //
-    //    $c = new Collection(array_keys($expected));
-    //    $actual = $c->combine(array_values($expected))->toArray();
+    //    $collection = new Collection(array_keys($expected));
+    //    $actual = $collection->combine(array_values($expected))->toArray();
     //
     //    $this->assertSame($expected, $actual);
     //}
@@ -685,147 +689,147 @@ class CollectionTest extends TestCase
 
     //function testPopReturnsAndRemovesLastItemInCollection()
     //{
-    //    $c = new Collection(['foo', 'bar']);
+    //    $collection = new Collection(['foo', 'bar']);
     //
-    //    $this->assertEquals('bar', $c->pop());
-    //    $this->assertEquals('foo', $c->first());
+    //    $this->assertEquals('bar', $collection->pop());
+    //    $this->assertEquals('foo', $collection->first());
     //}
     //
     //function testShiftReturnsAndRemovesFirstItemInCollection()
     //{
-    //    $c = new Collection(['foo', 'bar']);
+    //    $collection = new Collection(['foo', 'bar']);
     //
-    //    $this->assertEquals('foo', $c->shift());
-    //    $this->assertEquals('bar', $c->first());
+    //    $this->assertEquals('foo', $collection->shift());
+    //    $this->assertEquals('bar', $collection->first());
     //}
 
     //function testForgetSingleKey()
     //{
-    //    $c = new Collection(['foo', 'bar']);
-    //    $c->forget(0);
-    //    $this->assertFalse(isset($c['foo']));
+    //    $collection = new Collection(['foo', 'bar']);
+    //    $collection->forget(0);
+    //    $this->assertFalse(isset($collection['foo']));
     //
-    //    $c = new Collection(['foo' => 'bar', 'baz' => 'qux']);
-    //    $c->forget('foo');
-    //    $this->assertFalse(isset($c['foo']));
+    //    $collection = new Collection(['foo' => 'bar', 'baz' => 'qux']);
+    //    $collection->forget('foo');
+    //    $this->assertFalse(isset($collection['foo']));
     //}
 
     //function testForgetArrayOfKeys()
     //{
-    //    $c = new Collection(['foo', 'bar', 'baz']);
-    //    $c->forget([0, 2]);
-    //    $this->assertFalse(isset($c[0]));
-    //    $this->assertFalse(isset($c[2]));
-    //    $this->assertTrue(isset($c[1]));
+    //    $collection = new Collection(['foo', 'bar', 'baz']);
+    //    $collection->forget([0, 2]);
+    //    $this->assertFalse(isset($collection[0]));
+    //    $this->assertFalse(isset($collection[2]));
+    //    $this->assertTrue(isset($collection[1]));
     //
-    //    $c = new Collection(['name' => 'taylor', 'foo' => 'bar', 'baz' => 'qux']);
-    //    $c->forget(['foo', 'baz']);
-    //    $this->assertFalse(isset($c['foo']));
-    //    $this->assertFalse(isset($c['baz']));
-    //    $this->assertTrue(isset($c['name']));
+    //    $collection = new Collection(['name' => 'taylor', 'foo' => 'bar', 'baz' => 'qux']);
+    //    $collection->forget(['foo', 'baz']);
+    //    $this->assertFalse(isset($collection['foo']));
+    //    $this->assertFalse(isset($collection['baz']));
+    //    $this->assertTrue(isset($collection['name']));
     //}
 
     //function testWhere()
     //{
-    //    $c = new Collection([['v' => 1], ['v' => 2], ['v' => 3], ['v' => '3'], ['v' => 4]]);
-    //    $this->assertEquals([['v' => 3]], $c->where('v', 3)->values()->all());
+    //    $collection = new Collection([['v' => 1], ['v' => 2], ['v' => 3], ['v' => '3'], ['v' => 4]]);
+    //    $this->assertEquals([['v' => 3]], $collection->where('v', 3)->values()->all());
     //}
     //
     //function testWhereLoose()
     //{
-    //    $c = new Collection([['v' => 1], ['v' => 2], ['v' => 3], ['v' => '3'], ['v' => 4]]);
-    //    $this->assertEquals([['v' => 3], ['v' => '3']], $c->whereLoose('v', 3)->values()->all());
+    //    $collection = new Collection([['v' => 1], ['v' => 2], ['v' => 3], ['v' => '3'], ['v' => 4]]);
+    //    $this->assertEquals([['v' => 3], ['v' => '3']], $collection->whereLoose('v', 3)->values()->all());
     //}
     //
     //function testWhereIn()
     //{
-    //    $c = new Collection([['v' => 1], ['v' => 2], ['v' => 3], ['v' => '3'], ['v' => 4]]);
-    //    $this->assertEquals([['v' => 1], ['v' => 3]], $c->whereIn('v', [1, 3])->values()->all());
+    //    $collection = new Collection([['v' => 1], ['v' => 2], ['v' => 3], ['v' => '3'], ['v' => 4]]);
+    //    $this->assertEquals([['v' => 1], ['v' => 3]], $collection->whereIn('v', [1, 3])->values()->all());
     //}
     //
     //function testWhereInLoose()
     //{
-    //    $c = new Collection([['v' => 1], ['v' => 2], ['v' => 3], ['v' => '3'], ['v' => 4]]);
-    //    $this->assertEquals([['v' => 1], ['v' => 3], ['v' => '3']], $c->whereInLoose('v', [1, 3])->values()->all());
+    //    $collection = new Collection([['v' => 1], ['v' => 2], ['v' => 3], ['v' => '3'], ['v' => 4]]);
+    //    $this->assertEquals([['v' => 1], ['v' => 3], ['v' => '3']], $collection->whereInLoose('v', [1, 3])->values()->all());
     //}
 
     //function testFlatten()
     //{
     //    // Flat arrays are unaffected
-    //    $c = new Collection(['#foo', '#bar', '#baz']);
-    //    $this->assertEquals(['#foo', '#bar', '#baz'], $c->flatten()->all());
+    //    $collection = new Collection(['#foo', '#bar', '#baz']);
+    //    $this->assertEquals(['#foo', '#bar', '#baz'], $collection->flatten()->all());
     //
     //    // Nested arrays are flattened with existing flat items
-    //    $c = new Collection([['#foo', '#bar'], '#baz']);
-    //    $this->assertEquals(['#foo', '#bar', '#baz'], $c->flatten()->all());
+    //    $collection = new Collection([['#foo', '#bar'], '#baz']);
+    //    $this->assertEquals(['#foo', '#bar', '#baz'], $collection->flatten()->all());
     //
     //    // Sets of nested arrays are flattened
-    //    $c = new Collection([['#foo', '#bar'], ['#baz']]);
-    //    $this->assertEquals(['#foo', '#bar', '#baz'], $c->flatten()->all());
+    //    $collection = new Collection([['#foo', '#bar'], ['#baz']]);
+    //    $this->assertEquals(['#foo', '#bar', '#baz'], $collection->flatten()->all());
     //
     //    // Deeply nested arrays are flattened
-    //    $c = new Collection([['#foo', ['#bar']], ['#baz']]);
-    //    $this->assertEquals(['#foo', '#bar', '#baz'], $c->flatten()->all());
+    //    $collection = new Collection([['#foo', ['#bar']], ['#baz']]);
+    //    $this->assertEquals(['#foo', '#bar', '#baz'], $collection->flatten()->all());
     //
     //    // Nested collections are flattened alongside arrays
-    //    $c = new Collection([new Collection(['#foo', '#bar']), ['#baz']]);
-    //    $this->assertEquals(['#foo', '#bar', '#baz'], $c->flatten()->all());
+    //    $collection = new Collection([new Collection(['#foo', '#bar']), ['#baz']]);
+    //    $this->assertEquals(['#foo', '#bar', '#baz'], $collection->flatten()->all());
     //
     //    // Nested collections containing plain arrays are flattened
-    //    $c = new Collection([new Collection(['#foo', ['#bar']]), ['#baz']]);
-    //    $this->assertEquals(['#foo', '#bar', '#baz'], $c->flatten()->all());
+    //    $collection = new Collection([new Collection(['#foo', ['#bar']]), ['#baz']]);
+    //    $this->assertEquals(['#foo', '#bar', '#baz'], $collection->flatten()->all());
     //
     //    // Nested arrays containing collections are flattened
-    //    $c = new Collection([['#foo', new Collection(['#bar'])], ['#baz']]);
-    //    $this->assertEquals(['#foo', '#bar', '#baz'], $c->flatten()->all());
+    //    $collection = new Collection([['#foo', new Collection(['#bar'])], ['#baz']]);
+    //    $this->assertEquals(['#foo', '#bar', '#baz'], $collection->flatten()->all());
     //
     //    // Nested arrays containing collections containing arrays are flattened
-    //    $c = new Collection([['#foo', new Collection(['#bar', ['#zap']])], ['#baz']]);
-    //    $this->assertEquals(['#foo', '#bar', '#zap', '#baz'], $c->flatten()->all());
+    //    $collection = new Collection([['#foo', new Collection(['#bar', ['#zap']])], ['#baz']]);
+    //    $this->assertEquals(['#foo', '#bar', '#zap', '#baz'], $collection->flatten()->all());
     //}
     //
     //function testFlattenWithDepth()
     //{
     //    // No depth flattens recursively
-    //    $c = new Collection([['#foo', ['#bar', ['#baz']]], '#zap']);
-    //    $this->assertEquals(['#foo', '#bar', '#baz', '#zap'], $c->flatten()->all());
+    //    $collection = new Collection([['#foo', ['#bar', ['#baz']]], '#zap']);
+    //    $this->assertEquals(['#foo', '#bar', '#baz', '#zap'], $collection->flatten()->all());
     //
     //    // Specifying a depth only flattens to that depth
-    //    $c = new Collection([['#foo', ['#bar', ['#baz']]], '#zap']);
-    //    $this->assertEquals(['#foo', ['#bar', ['#baz']], '#zap'], $c->flatten(1)->all());
+    //    $collection = new Collection([['#foo', ['#bar', ['#baz']]], '#zap']);
+    //    $this->assertEquals(['#foo', ['#bar', ['#baz']], '#zap'], $collection->flatten(1)->all());
     //
-    //    $c = new Collection([['#foo', ['#bar', ['#baz']]], '#zap']);
-    //    $this->assertEquals(['#foo', '#bar', ['#baz'], '#zap'], $c->flatten(2)->all());
+    //    $collection = new Collection([['#foo', ['#bar', ['#baz']]], '#zap']);
+    //    $this->assertEquals(['#foo', '#bar', ['#baz'], '#zap'], $collection->flatten(2)->all());
     //}
 
     //function testUnionNull()
     //{
-    //    $c = new Collection(['name' => 'Hello']);
-    //    $this->assertEquals(['name' => 'Hello'], $c->union(null)->all());
+    //    $collection = new Collection(['name' => 'Hello']);
+    //    $this->assertEquals(['name' => 'Hello'], $collection->union(null)->all());
     //}
     //
     //function testUnionArray()
     //{
-    //    $c = new Collection(['name' => 'Hello']);
-    //    $this->assertEquals(['name' => 'Hello', 'id' => 1], $c->union(['id' => 1])->all());
+    //    $collection = new Collection(['name' => 'Hello']);
+    //    $this->assertEquals(['name' => 'Hello', 'id' => 1], $collection->union(['id' => 1])->all());
     //}
     //
     //function testUnionCollection()
     //{
-    //    $c = new Collection(['name' => 'Hello']);
-    //    $this->assertEquals(['name' => 'Hello', 'id' => 1], $c->union(new Collection(['name' => 'World', 'id' => 1]))->all());
+    //    $collection = new Collection(['name' => 'Hello']);
+    //    $this->assertEquals(['name' => 'Hello', 'id' => 1], $collection->union(new Collection(['name' => 'World', 'id' => 1]))->all());
     //}
 
     //function testIntersectNull()
     //{
-    //    $c = new Collection(['id' => 1, 'first_word' => 'Hello']);
-    //    $this->assertEquals([], $c->intersect(null)->all());
+    //    $collection = new Collection(['id' => 1, 'first_word' => 'Hello']);
+    //    $this->assertEquals([], $collection->intersect(null)->all());
     //}
     //
     //function testIntersectCollection()
     //{
-    //    $c = new Collection(['id' => 1, 'first_word' => 'Hello']);
-    //    $this->assertEquals(['first_word' => 'Hello'], $c->intersect(new Collection(['first_world' => 'Hello', 'last_word' => 'World']))->all());
+    //    $collection = new Collection(['id' => 1, 'first_word' => 'Hello']);
+    //    $this->assertEquals(['first_word' => 'Hello'], $collection->intersect(new Collection(['first_world' => 'Hello', 'last_word' => 'World']))->all());
     //}
 
     //function testCollapse()
@@ -943,9 +947,9 @@ class CollectionTest extends TestCase
     //            ->values();
     //    });
     //
-    //    $c = new Collection(['a', 'a', 'aa', 'aaa', 'bar']);
+    //    $collection = new Collection(['a', 'a', 'aa', 'aaa', 'bar']);
     //
-    //    $this->assertSame(['a', 'aa', 'aaa'], $c->foo()->all());
+    //    $this->assertSame(['a', 'aa', 'aaa'], $collection->foo()->all());
     //}
 
     //function testSplice()
@@ -1117,163 +1121,163 @@ class CollectionTest extends TestCase
     //
     //function testContains()
     //{
-    //    $c = new Collection([1, 3, 5]);
+    //    $collection = new Collection([1, 3, 5]);
     //
-    //    $this->assertTrue($c->contains(1));
-    //    $this->assertFalse($c->contains(2));
-    //    $this->assertTrue($c->contains(function ($value) {
+    //    $this->assertTrue($collection->contains(1));
+    //    $this->assertFalse($collection->contains(2));
+    //    $this->assertTrue($collection->contains(function ($value) {
     //        return $value < 5;
     //    }));
-    //    $this->assertFalse($c->contains(function ($value) {
+    //    $this->assertFalse($collection->contains(function ($value) {
     //        return $value > 5;
     //    }));
     //
-    //    $c = new Collection([['v' => 1], ['v' => 3], ['v' => 5]]);
+    //    $collection = new Collection([['v' => 1], ['v' => 3], ['v' => 5]]);
     //
-    //    $this->assertTrue($c->contains('v', 1));
-    //    $this->assertFalse($c->contains('v', 2));
+    //    $this->assertTrue($collection->contains('v', 1));
+    //    $this->assertFalse($collection->contains('v', 2));
     //
-    //    $c = new Collection(['date', 'class', (object) ['foo' => 50]]);
+    //    $collection = new Collection(['date', 'class', (object) ['foo' => 50]]);
     //
-    //    $this->assertTrue($c->contains('date'));
-    //    $this->assertTrue($c->contains('class'));
-    //    $this->assertFalse($c->contains('foo'));
+    //    $this->assertTrue($collection->contains('date'));
+    //    $this->assertTrue($collection->contains('class'));
+    //    $this->assertFalse($collection->contains('foo'));
     //}
 
     //function testValueRetrieverAcceptsDotNotation()
     //{
-    //    $c = new Collection([
+    //    $collection = new Collection([
     //        (object) ['id' => 1, 'foo' => ['bar' => 'B']], (object) ['id' => 2, 'foo' => ['bar' => 'A']],
     //    ]);
     //
-    //    $c = $c->sortBy('foo.bar');
-    //    $this->assertEquals([2, 1], $c->pluck('id')->all());
+    //    $collection = $collection->sortBy('foo.bar');
+    //    $this->assertEquals([2, 1], $collection->pluck('id')->all());
     //}
     //
     //function testPullRetrievesItemFromCollection()
     //{
-    //    $c = new Collection(['foo', 'bar']);
+    //    $collection = new Collection(['foo', 'bar']);
     //
-    //    $this->assertEquals('foo', $c->pull(0));
+    //    $this->assertEquals('foo', $collection->pull(0));
     //}
     //
     //function testPullRemovesItemFromCollection()
     //{
-    //    $c = new Collection(['foo', 'bar']);
-    //    $c->pull(0);
-    //    $this->assertEquals([1 => 'bar'], $c->all());
+    //    $collection = new Collection(['foo', 'bar']);
+    //    $collection->pull(0);
+    //    $this->assertEquals([1 => 'bar'], $collection->all());
     //}
     //
     //function testPullReturnsDefault()
     //{
-    //    $c = new Collection([]);
-    //    $value = $c->pull(0, 'foo');
+    //    $collection = new Collection([]);
+    //    $value = $collection->pull(0, 'foo');
     //    $this->assertEquals('foo', $value);
     //}
     //
     //function testRejectRemovesElementsPassingTruthTest()
     //{
-    //    $c = new Collection(['foo', 'bar']);
-    //    $this->assertEquals(['foo'], $c->reject('bar')->values()->all());
+    //    $collection = new Collection(['foo', 'bar']);
+    //    $this->assertEquals(['foo'], $collection->reject('bar')->values()->all());
     //
-    //    $c = new Collection(['foo', 'bar']);
-    //    $this->assertEquals(['foo'], $c->reject(function ($v) {
+    //    $collection = new Collection(['foo', 'bar']);
+    //    $this->assertEquals(['foo'], $collection->reject(function ($v) {
     //        return $v == 'bar';
     //    })->values()->all());
     //
-    //    $c = new Collection(['foo', null]);
-    //    $this->assertEquals(['foo'], $c->reject(null)->values()->all());
+    //    $collection = new Collection(['foo', null]);
+    //    $this->assertEquals(['foo'], $collection->reject(null)->values()->all());
     //
-    //    $c = new Collection(['foo', 'bar']);
-    //    $this->assertEquals(['foo', 'bar'], $c->reject('baz')->values()->all());
+    //    $collection = new Collection(['foo', 'bar']);
+    //    $this->assertEquals(['foo', 'bar'], $collection->reject('baz')->values()->all());
     //
-    //    $c = new Collection(['foo', 'bar']);
-    //    $this->assertEquals(['foo', 'bar'], $c->reject(function ($v) {
+    //    $collection = new Collection(['foo', 'bar']);
+    //    $this->assertEquals(['foo', 'bar'], $collection->reject(function ($v) {
     //        return $v == 'baz';
     //    })->values()->all());
     //
-    //    $c = new Collection(['id' => 1, 'primary' => 'foo', 'secondary' => 'bar']);
-    //    $this->assertEquals(['primary' => 'foo', 'secondary' => 'bar'], $c->reject(function ($item, $key) {
+    //    $collection = new Collection(['id' => 1, 'primary' => 'foo', 'secondary' => 'bar']);
+    //    $this->assertEquals(['primary' => 'foo', 'secondary' => 'bar'], $collection->reject(function ($item, $key) {
     //        return $key == 'id';
     //    })->all());
     //}
     //
     //function testSearchReturnsIndexOfFirstFoundItem()
     //{
-    //    $c = new Collection([1, 2, 3, 4, 5, 2, 5, 'foo' => 'bar']);
+    //    $collection = new Collection([1, 2, 3, 4, 5, 2, 5, 'foo' => 'bar']);
     //
-    //    $this->assertEquals(1, $c->search(2));
-    //    $this->assertEquals('foo', $c->search('bar'));
-    //    $this->assertEquals(4, $c->search(function ($value) {
+    //    $this->assertEquals(1, $collection->search(2));
+    //    $this->assertEquals('foo', $collection->search('bar'));
+    //    $this->assertEquals(4, $collection->search(function ($value) {
     //        return $value > 4;
     //    }));
-    //    $this->assertEquals('foo', $c->search(function ($value) {
+    //    $this->assertEquals('foo', $collection->search(function ($value) {
     //        return ! is_numeric($value);
     //    }));
     //}
     //
     //function testSearchReturnsFalseWhenItemIsNotFound()
     //{
-    //    $c = new Collection([1, 2, 3, 4, 5, 'foo' => 'bar']);
+    //    $collection = new Collection([1, 2, 3, 4, 5, 'foo' => 'bar']);
     //
-    //    $this->assertFalse($c->search(6));
-    //    $this->assertFalse($c->search('foo'));
-    //    $this->assertFalse($c->search(function ($value) {
+    //    $this->assertFalse($collection->search(6));
+    //    $this->assertFalse($collection->search('foo'));
+    //    $this->assertFalse($collection->search(function ($value) {
     //        return $value < 1 && is_numeric($value);
     //    }));
-    //    $this->assertFalse($c->search(function ($value) {
+    //    $this->assertFalse($collection->search(function ($value) {
     //        return $value == 'nope';
     //    }));
     //}
     //
     //function testKeys()
     //{
-    //    $c = new Collection(['name' => 'taylor', 'framework' => 'laravel']);
-    //    $this->assertEquals(['name', 'framework'], $c->keys()->all());
+    //    $collection = new Collection(['name' => 'taylor', 'framework' => 'laravel']);
+    //    $this->assertEquals(['name', 'framework'], $collection->keys()->all());
     //}
     //
     //function testPaginate()
     //{
-    //    $c = new Collection(['one', 'two', 'three', 'four']);
-    //    $this->assertEquals(['one', 'two'], $c->forPage(1, 2)->all());
-    //    $this->assertEquals([2 => 'three', 3 => 'four'], $c->forPage(2, 2)->all());
-    //    $this->assertEquals([], $c->forPage(3, 2)->all());
+    //    $collection = new Collection(['one', 'two', 'three', 'four']);
+    //    $this->assertEquals(['one', 'two'], $collection->forPage(1, 2)->all());
+    //    $this->assertEquals([2 => 'three', 3 => 'four'], $collection->forPage(2, 2)->all());
+    //    $this->assertEquals([], $collection->forPage(3, 2)->all());
     //}
     //
     //function testPrepend()
     //{
-    //    $c = new Collection(['one', 'two', 'three', 'four']);
-    //    $this->assertEquals(['zero', 'one', 'two', 'three', 'four'], $c->prepend('zero')->all());
+    //    $collection = new Collection(['one', 'two', 'three', 'four']);
+    //    $this->assertEquals(['zero', 'one', 'two', 'three', 'four'], $collection->prepend('zero')->all());
     //
-    //    $c = new Collection(['one' => 1, 'two' => 2]);
-    //    $this->assertEquals(['zero' => 0, 'one' => 1, 'two' => 2], $c->prepend(0, 'zero')->all());
+    //    $collection = new Collection(['one' => 1, 'two' => 2]);
+    //    $this->assertEquals(['zero' => 0, 'one' => 1, 'two' => 2], $collection->prepend(0, 'zero')->all());
     //}
     //
     //function testZip()
     //{
-    //    $c = new Collection([1, 2, 3]);
-    //    $c = $c->zip(new Collection([4, 5, 6]));
-    //    $this->assertInstanceOf(Collection::class, $c);
-    //    $this->assertInstanceOf(Collection::class, $c[0]);
-    //    $this->assertInstanceOf(Collection::class, $c[1]);
-    //    $this->assertInstanceOf(Collection::class, $c[2]);
-    //    $this->assertCount(3, $c);
-    //    $this->assertEquals([1, 4], $c[0]->all());
-    //    $this->assertEquals([2, 5], $c[1]->all());
-    //    $this->assertEquals([3, 6], $c[2]->all());
+    //    $collection = new Collection([1, 2, 3]);
+    //    $collection = $collection->zip(new Collection([4, 5, 6]));
+    //    $this->assertInstanceOf(Collection::class, $collection);
+    //    $this->assertInstanceOf(Collection::class, $collection[0]);
+    //    $this->assertInstanceOf(Collection::class, $collection[1]);
+    //    $this->assertInstanceOf(Collection::class, $collection[2]);
+    //    $this->assertCount(3, $collection);
+    //    $this->assertEquals([1, 4], $collection[0]->all());
+    //    $this->assertEquals([2, 5], $collection[1]->all());
+    //    $this->assertEquals([3, 6], $collection[2]->all());
     //
-    //    $c = new Collection([1, 2, 3]);
-    //    $c = $c->zip([4, 5, 6], [7, 8, 9]);
-    //    $this->assertCount(3, $c);
-    //    $this->assertEquals([1, 4, 7], $c[0]->all());
-    //    $this->assertEquals([2, 5, 8], $c[1]->all());
-    //    $this->assertEquals([3, 6, 9], $c[2]->all());
+    //    $collection = new Collection([1, 2, 3]);
+    //    $collection = $collection->zip([4, 5, 6], [7, 8, 9]);
+    //    $this->assertCount(3, $collection);
+    //    $this->assertEquals([1, 4, 7], $collection[0]->all());
+    //    $this->assertEquals([2, 5, 8], $collection[1]->all());
+    //    $this->assertEquals([3, 6, 9], $collection[2]->all());
     //
-    //    $c = new Collection([1, 2, 3]);
-    //    $c = $c->zip([4, 5, 6], [7]);
-    //    $this->assertCount(3, $c);
-    //    $this->assertEquals([1, 4, 7], $c[0]->all());
-    //    $this->assertEquals([2, 5, null], $c[1]->all());
-    //    $this->assertEquals([3, 6, null], $c[2]->all());
+    //    $collection = new Collection([1, 2, 3]);
+    //    $collection = $collection->zip([4, 5, 6], [7]);
+    //    $this->assertCount(3, $collection);
+    //    $this->assertEquals([1, 4, 7], $collection[0]->all());
+    //    $this->assertEquals([2, 5, null], $collection[1]->all());
+    //    $this->assertEquals([3, 6, null], $collection[2]->all());
     //}
 }

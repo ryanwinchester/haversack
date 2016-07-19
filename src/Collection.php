@@ -3,10 +3,11 @@
 namespace SevenShores\Haversack;
 
 use ArrayAccess;
+use Countable;
 use IteratorAggregate;
 use Traversable;
 
-class Collection implements ArrayAccess, IteratorAggregate
+class Collection implements ArrayAccess, Countable, IteratorAggregate
 {
     /**
      * @var array
@@ -20,7 +21,7 @@ class Collection implements ArrayAccess, IteratorAggregate
      */
     function __construct($items = [])
     {
-        $this->items = $items;
+        $this->items = (array) $items;
     }
 
     /**
@@ -151,7 +152,8 @@ class Collection implements ArrayAccess, IteratorAggregate
     function last($callback = null)
     {
         if (! $callback) {
-            return $this->items[-1];
+            $items = $this->items;
+            return array_pop($items);
         }
         return $this->filter($callback)->last(); // TODO: Optimize
     }
@@ -244,11 +246,12 @@ class Collection implements ArrayAccess, IteratorAggregate
     }
 
     /**
+     * @param bool $preserve_keys
      * @return static
      */
-    function reverse()
+    function reverse($preserve_keys = true)
     {
-        return new static(array_reverse($this->items));
+        return new static(array_reverse($this->items, $preserve_keys));
     }
 
     /**
