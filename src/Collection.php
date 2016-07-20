@@ -14,6 +14,8 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
      */
     protected $items;
 
+    const PACKED_ARGS = 1;
+
     /**
      * Collection constructor.
      *
@@ -21,7 +23,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
      */
     function __construct($items = [])
     {
-        $this->items = (array) $items;
+        $this->items = $this->getArrayFrom($items);
     }
 
     /**
@@ -74,7 +76,10 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
      */
     function diff(...$arrays)
     {
-        return new static(array_diff($this->items, ...$arrays));
+        return new static(array_diff(
+            $this->items,
+            ...$this->getArrayFrom($arrays, static::PACKED_ARGS)
+        ));
     }
 
     /**
@@ -83,7 +88,10 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
      */
     function diffKeys(...$arrays)
     {
-        return new static(array_diff_key($this->items, ...$arrays));
+        return new static(array_diff_key(
+            $this->items,
+            ...$this->getArrayFrom($arrays, static::PACKED_ARGS)
+        ));
     }
 
     /**
@@ -101,8 +109,11 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
      * @param int $flag
      * @return static
      */
-    function filter($callback, $flag = ARRAY_FILTER_USE_BOTH)
+    function filter($callback = null, $flag = ARRAY_FILTER_USE_BOTH)
     {
+        if (! $callback) {
+            return new static(array_filter($this->items));
+        }
         return new static(array_filter($this->items, $callback, $flag));
     }
 
@@ -164,7 +175,11 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
      */
     function map($callback)
     {
-        return new static(array_map($callback, $this->items, array_keys($this->items)));
+        return new static(array_map(
+            $callback,
+            $this->items,
+            array_keys($this->items)
+        ));
     }
 
     /**
@@ -181,7 +196,10 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
      */
     function merge(...$arrays)
     {
-        return new static(array_merge($this->items, ...$arrays));
+        return new static(array_merge(
+            $this->items,
+            ...$this->getArrayFrom($arrays, static::PACKED_ARGS)
+        ));
     }
 
     /**
@@ -222,7 +240,11 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
      */
     function offsetSet($offset, $value)
     {
-        $this->items[$offset] = $value;
+        if (is_null($offset)) {
+            $this->items[] = $value;
+        } else {
+            $this->items[$offset] = $value;
+        }
     }
 
     /**
@@ -343,5 +365,24 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
     function values()
     {
         return new static(array_values($this->items));
+    }
+
+    /**
+     * @param mixed $array
+     * @param int $depth 0 or 1
+     */
+    protected function getArrayFrom($array, $depth = 0)
+    {
+        $array = $array instanceof static ? $array->all() : $array;
+
+        if (! is_array($array)) {
+            return (array) $array;
+        }
+
+        if ($depth === static::PACKED_ARGS) {
+            return array_map([$this, "getArrayFrom"], $array);
+        }
+
+        return $array;
     }
 }

@@ -156,11 +156,11 @@ class CollectionTest extends TestCase
         $this->assertEquals(['foo'], $collection->getIterator()->getArrayCopy());
     }
 
-    function testCachingIterator()
-    {
-        $collection = new Collection(['foo']);
-        $this->assertInstanceOf('CachingIterator', $collection->getCachingIterator());
-    }
+    // function testCachingIterator()
+    // {
+    //     $collection = new Collection(['foo']);
+    //     $this->assertInstanceOf('CachingIterator', $collection->getCachingIterator());
+    // }
 
     function testFilter()
     {
@@ -186,11 +186,11 @@ class CollectionTest extends TestCase
         })->values()->all());
     }
 
-    function testMergeNull()
-    {
-        $collection = new Collection(['name' => 'Hello']);
-        $this->assertEquals(['name' => 'Hello'], $collection->merge(null)->all());
-    }
+    // function testMergeNull()
+    // {
+    //     $collection = new Collection(['name' => 'Hello']);
+    //     $this->assertEquals(['name' => 'Hello'], $collection->merge(null)->all());
+    // }
 
     function testMergeArray()
     {
@@ -210,11 +210,11 @@ class CollectionTest extends TestCase
         $this->assertEquals(['id' => 1], $collection->diff(new Collection(['first_word' => 'Hello', 'last_word' => 'World']))->all());
     }
 
-    function testDiffNull()
-    {
-        $collection = new Collection(['id' => 1, 'first_word' => 'Hello']);
-        $this->assertEquals(['id' => 1, 'first_word' => 'Hello'], $collection->diff(null)->all());
-    }
+    // function testDiffNull()
+    // {
+    //     $collection = new Collection(['id' => 1, 'first_word' => 'Hello']);
+    //     $this->assertEquals(['id' => 1, 'first_word' => 'Hello'], $collection->diff(null)->all());
+    // }
 
     function testDiffKeys()
     {
