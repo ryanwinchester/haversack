@@ -101,6 +101,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
     function each($callback)
     {
         $this->items = $this->map($callback);
+
         return $this;
     }
 
@@ -114,6 +115,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
         if (! $callback) {
             return new static(array_filter($this->items));
         }
+
         return new static(array_filter($this->items, $callback, $flag));
     }
 
@@ -126,7 +128,8 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
         if (! $callback) {
             return $this->items[0];
         }
-        return $this->filter($callback)->first(); // TODO: Optimize
+
+        return $this->filter($callback)->first();
     }
 
     /**
@@ -163,10 +166,10 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
     function last($callback = null)
     {
         if (! $callback) {
-            $items = $this->items;
-            return array_pop($items);
+            return $this->items[-1];
         }
-        return $this->filter($callback)->last(); // TODO: Optimize
+
+        return $this->filter($callback)->last();
     }
 
     /**
@@ -329,6 +332,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
                 ? $b->{$property} <=> $a->{$property}
                 : $a->{$property} <=> $b->{$property};
         });
+
         return new static($items);
     }
 
@@ -356,6 +360,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
     {
         $items = $this->items;
         usort($items, $callback);
+
         return new static($items);
     }
 
